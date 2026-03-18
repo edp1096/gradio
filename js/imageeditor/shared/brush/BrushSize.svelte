@@ -30,8 +30,37 @@
 		padding-top: var(--size-2-5);
 	}
 
-	input {
+	input[type="range"] {
+		-webkit-appearance: none;
+		appearance: none;
 		width: 100%;
+		height: 6px;
+		border-radius: 3px;
+		background: var(--neutral-400, #9ca3af);
+		outline: none;
+		margin: auto 0;
+		border: none;
+		padding: 0;
+	}
+
+	input[type="range"]::-webkit-slider-thumb {
+		-webkit-appearance: none;
+		appearance: none;
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-accent, #f97316);
+		cursor: pointer;
+		border: none;
+	}
+
+	input[type="range"]::-moz-range-thumb {
+		width: 16px;
+		height: 16px;
+		border-radius: 50%;
+		background: var(--color-accent, #f97316);
+		cursor: pointer;
+		border: none;
 	}
 	span {
 		width: 26px;
