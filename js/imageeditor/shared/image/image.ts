@@ -152,11 +152,15 @@ export class AddImageCommand implements BgImageCommand {
 
 	async start(): Promise<void> {
 		let image_texture: Texture;
-		if (this.background instanceof Texture) {
-			image_texture = this.background;
-		} else {
-			const img = await createImageBitmap(this.background);
-			image_texture = Texture.from(img);
+		try {
+			if (this.background instanceof Texture) {
+				image_texture = this.background;
+			} else {
+				const img = await createImageBitmap(this.background);
+				image_texture = Texture.from(img);
+			}
+		} catch (e) {
+			throw e;
 		}
 
 		this.sprite = new Sprite(image_texture);
@@ -209,13 +213,19 @@ export class AddImageCommand implements BgImageCommand {
 			this.context = context;
 		}
 
-		await this.start();
+		try {
+			await this.start();
+		} catch (e) {
+			return;
+		}
 
 		if (this.sprite === null) {
 			return;
 		}
 
 		const { width, height } = this.computed_dimensions;
+		const use_w = this.fixed_canvas ? this.current_canvas_size.width : width;
+		const use_h = this.fixed_canvas ? this.current_canvas_size.height : height;
 
 		await this.context.set_image_properties({
 			scale: 1,
@@ -223,22 +233,16 @@ export class AddImageCommand implements BgImageCommand {
 				x: this.context.app.screen.width / 2,
 				y: this.context.app.screen.height / 2
 			},
-			width: this.fixed_canvas ? this.current_canvas_size.width : width,
-			height: this.fixed_canvas ? this.current_canvas_size.height : height
+			width: use_w,
+			height: use_h
 		});
 
-		const background_layer = this.context.layer_manager.create_background_layer(
-			this.fixed_canvas ? this.current_canvas_size.width : width,
-			this.fixed_canvas ? this.current_canvas_size.height : height
-		);
+		const background_layer = this.context.layer_manager.create_background_layer(use_w, use_h);
+
 		this.sprite.zIndex = 0;
 		background_layer.addChild(this.sprite);
 
-		this.context.layer_manager.reset_layers(
-			this.fixed_canvas ? this.current_canvas_size.width : width,
-			this.fixed_canvas ? this.current_canvas_size.height : height,
-			true
-		);
+		this.context.layer_manager.reset_layers(use_w, use_h, true);
 
 		if (this.border_region > 0) {
 			(this.sprite as any).borderRegion = this.border_region;
