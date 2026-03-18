@@ -344,17 +344,27 @@ export class BrushTextures {
 
 	/**
 	 * Initializes textures needed for the brush tool.
+	 * If explicit dimensions are provided, use them instead of getLocalBounds().
 	 */
-	initialize_textures(): void {
+	initialize_textures(
+		explicit_width?: number,
+		explicit_height?: number
+	): void {
 		this.cleanup_textures();
 
-		const local_bounds =
-			this.image_editor_context.image_container.getLocalBounds();
-
-		this.dimensions = {
-			width: local_bounds.width,
-			height: local_bounds.height
-		};
+		if (explicit_width && explicit_height) {
+			this.dimensions = {
+				width: explicit_width,
+				height: explicit_height
+			};
+		} else {
+			const local_bounds =
+				this.image_editor_context.image_container.getLocalBounds();
+			this.dimensions = {
+				width: local_bounds.width,
+				height: local_bounds.height
+			};
+		}
 
 		this.stroke_texture = RenderTexture.create({
 			width: this.dimensions.width,
@@ -399,11 +409,11 @@ export class BrushTextures {
 	 * Reinitializes textures when needed (e.g., after resizing).
 	 */
 	reinitialize(): void {
+		const local_bounds =
+			this.image_editor_context.image_container.getLocalBounds();
 		if (
-			this.image_editor_context.image_container.width !==
-				this.dimensions.width ||
-			this.image_editor_context.image_container.height !==
-				this.dimensions.height
+			Math.round(local_bounds.width) !== Math.round(this.dimensions.width) ||
+			Math.round(local_bounds.height) !== Math.round(this.dimensions.height)
 		) {
 			this.initialize_textures();
 		}
