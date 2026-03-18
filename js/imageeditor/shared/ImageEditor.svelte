@@ -426,7 +426,7 @@
 	): Promise<void> {
 		if (files == null) return;
 		if (!sources.includes("upload")) return;
-		editor.reset_canvas();
+		await editor.reset_canvas();
 		const _file = Array.isArray(files) ? files[0] : files;
 		await editor.add_image({ image: _file });
 		await crop.add_image({ image: _file });
