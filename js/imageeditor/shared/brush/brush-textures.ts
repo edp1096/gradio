@@ -6,7 +6,6 @@ import {
 	Application,
 	Texture
 } from "pixi.js";
-import { get } from "svelte/store";
 import { type ImageEditorContext } from "../core/editor";
 import { type Command } from "../core/commands";
 
@@ -337,36 +336,25 @@ export class BrushTextures {
 		this.image_editor_context = image_editor_context;
 		this.app = app;
 
-		const dims = get(this.image_editor_context.dimensions);
 		this.dimensions = {
-			width: dims.width,
-			height: dims.height
+			width: this.image_editor_context.image_container.width,
+			height: this.image_editor_context.image_container.height
 		};
 	}
 
 	/**
 	 * Initializes textures needed for the brush tool.
-	 * If explicit dimensions are provided, use them instead of getLocalBounds().
 	 */
-	initialize_textures(
-		explicit_width?: number,
-		explicit_height?: number
-	): void {
+	initialize_textures(): void {
 		this.cleanup_textures();
 
-		if (explicit_width && explicit_height) {
-			this.dimensions = {
-				width: explicit_width,
-				height: explicit_height
-			};
-		} else {
-			const local_bounds =
-				this.image_editor_context.image_container.getLocalBounds();
-			this.dimensions = {
-				width: local_bounds.width,
-				height: local_bounds.height
-			};
-		}
+		const local_bounds =
+			this.image_editor_context.image_container.getLocalBounds();
+
+		this.dimensions = {
+			width: local_bounds.width,
+			height: local_bounds.height
+		};
 
 		this.stroke_texture = RenderTexture.create({
 			width: this.dimensions.width,
@@ -411,12 +399,13 @@ export class BrushTextures {
 	 * Reinitializes textures when needed (e.g., after resizing).
 	 */
 	reinitialize(): void {
-		const dims = get(this.image_editor_context.dimensions);
 		if (
-			Math.round(dims.width) !== Math.round(this.dimensions.width) ||
-			Math.round(dims.height) !== Math.round(this.dimensions.height)
+			this.image_editor_context.image_container.width !==
+				this.dimensions.width ||
+			this.image_editor_context.image_container.height !==
+				this.dimensions.height
 		) {
-			this.initialize_textures(dims.width, dims.height);
+			this.initialize_textures();
 		}
 	}
 

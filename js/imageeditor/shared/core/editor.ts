@@ -335,6 +335,8 @@ export class ImageEditor {
 
 		this.dimensions.subscribe((dimensions) => {
 			this.dimensions_value = dimensions;
+			this.image_container.width = dimensions.width;
+			this.image_container.height = dimensions.height;
 		});
 
 		this.scale.subscribe((scale) => {
@@ -450,6 +452,9 @@ export class ImageEditor {
 			eventMode: "static",
 			sortableChildren: true
 		});
+
+		this.image_container.width = this.width;
+		this.image_container.height = this.height;
 
 		this.app.stage.sortableChildren = true;
 		this.app.stage.alpha = 1;

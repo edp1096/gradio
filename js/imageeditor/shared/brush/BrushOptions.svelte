@@ -177,7 +177,7 @@
 		pointer-events: all;
 		cursor: default;
 		z-index: var(--layer-top);
-		overflow: hidden;
+		overflow: visible;
 		top: 0;
 
 		transform: translate(35px, -12px);
