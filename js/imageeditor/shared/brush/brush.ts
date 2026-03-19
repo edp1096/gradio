@@ -3,6 +3,7 @@ import { type ImageEditorContext, type Tool } from "../core/editor";
 import { type Tool as ToolbarTool, type Subtool } from "../Toolbar.svelte";
 import type { ColorInput } from "tinycolor2";
 import tinycolor from "tinycolor2";
+import { get } from "svelte/store";
 import { BrushCursor } from "./brush-cursor";
 import { BrushTextures } from "./brush-textures";
 import { recurse_set_cursor } from "./brush-utils";
@@ -171,21 +172,19 @@ export class BrushTool implements Tool {
 
 		let dimensions_changed = false;
 		if (this.brush_textures && textures_initialized) {
-			const current_bounds =
-				this.image_editor_context.image_container.getLocalBounds();
+			const current_dims = get(this.image_editor_context.dimensions);
 			const tex_dims = this.brush_textures.get_dimensions();
 			dimensions_changed =
-				Math.round(current_bounds.width) !== Math.round(tex_dims.width) ||
-				Math.round(current_bounds.height) !== Math.round(tex_dims.height);
+				Math.round(current_dims.width) !== Math.round(tex_dims.width) ||
+				Math.round(current_dims.height) !== Math.round(tex_dims.height);
 		}
 
 		if (
 			needs_brush_tool &&
 			(mode_changed || !textures_initialized || dimensions_changed)
 		) {
-			const w = this.image_editor_context.image_container.width;
-			const h = this.image_editor_context.image_container.height;
-			this.brush_textures?.initialize_textures(w, h);
+			const dims = get(this.image_editor_context.dimensions);
+			this.brush_textures?.initialize_textures(dims.width, dims.height);
 		}
 
 		if (this.state.mode !== new_mode) {

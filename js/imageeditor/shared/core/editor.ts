@@ -72,7 +72,7 @@ export interface ImageEditorContext {
 	}) => Promise<void>;
 	execute_command: (command: Command) => Promise<void> | void;
 	resize_canvas: (width: number, height: number) => void;
-	reset: () => void;
+	reset: () => Promise<void>;
 	set_background_image: (image: Sprite) => void;
 	pad_bottom: number;
 }
@@ -335,8 +335,6 @@ export class ImageEditor {
 
 		this.dimensions.subscribe((dimensions) => {
 			this.dimensions_value = dimensions;
-			this.image_container.width = dimensions.width;
-			this.image_container.height = dimensions.height;
 		});
 
 		this.scale.subscribe((scale) => {
@@ -453,9 +451,6 @@ export class ImageEditor {
 			sortableChildren: true
 		});
 
-		this.image_container.width = this.width;
-		this.image_container.height = this.height;
-
 		this.app.stage.sortableChildren = true;
 		this.app.stage.alpha = 1;
 		this.app.stage.addChild(this.image_container);
@@ -544,12 +539,12 @@ export class ImageEditor {
 		}
 	}
 
-	reset(): void {
+	async reset(): Promise<void> {
 		const zoom = this.tools.get("zoom");
 
 		if (zoom) {
 			zoom.cleanup();
-			zoom.setup(this.context, this.current_tool, this.current_subtool);
+			await zoom.setup(this.context, this.current_tool, this.current_subtool);
 		}
 
 		const brush = this.tools.get("brush") as BrushTool;
@@ -682,7 +677,7 @@ export class ImageEditor {
 
 		for (const tool of this.tools.values()) {
 			tool.cleanup();
-			tool.setup(this.context, this.current_tool, this.current_subtool);
+			await tool.setup(this.context, this.current_tool, this.current_subtool);
 		}
 
 		const zoom_tool = this.tools.get("zoom") as ZoomTool;

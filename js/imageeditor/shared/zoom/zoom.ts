@@ -303,6 +303,10 @@ export class ZoomTool implements Tool {
 		width: number;
 		height: number;
 	}> {
+		const dims = get(this.image_editor_context.dimensions);
+		if (dims.width > 0 && dims.height > 0) {
+			return dims;
+		}
 		const bounds = this.image_editor_context.image_container.getLocalBounds();
 		return {
 			width: bounds.width,

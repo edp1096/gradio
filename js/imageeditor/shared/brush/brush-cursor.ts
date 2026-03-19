@@ -4,6 +4,7 @@ import {
 	Sprite,
 	type FederatedPointerEvent
 } from "pixi.js";
+import { get } from "svelte/store";
 import { type ImageEditorContext } from "../core/editor";
 import { type BrushState } from "./types";
 import tinycolor from "tinycolor2";
@@ -285,8 +286,9 @@ export class BrushCursor {
 		if (!this.brush_preview_container) return;
 
 		const image_container = this.image_editor_context.image_container;
-		const center_x = image_container.width / 2;
-		const center_y = image_container.height / 2;
+		const dims = get(this.image_editor_context.dimensions);
+		const center_x = dims.width / 2;
+		const center_y = dims.height / 2;
 
 		const global_pos = image_container.toGlobal({ x: center_x, y: center_y });
 
